@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "8080:8080" 
+    depends_on:
+             postgres-java:
+                condition: service_healthy
+                
+
+
+  postgres-java:
+      image: postgres:15
+      environment:
+            POSTGRES_USER: user    
+            POSTGRES_PASSWORD: 123456
+            POSTGRES_DB: javacode
+      ports:
+            - "5432:5432"
+      volumes:
+         - postgres_data:/var/lib/postgresql/data    
+      healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U user -d javacode"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+volumes:
+  postgres_data:
